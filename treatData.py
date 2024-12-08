@@ -4,30 +4,46 @@ def df_heatmap():
     # Read the CSV file
     df = pd.read_csv('IDS-FILTERED.csv')
     
-    # Select only the necessary columns and clean column names
-    classification_df = df[['sourceIP', 'destIP', 'classification']].rename(columns=lambda x: x.strip())
-
-    # Group by sourceIP and destIP, then count occurrences of each classification
-    reduced_df = (
-        classification_df
-        .groupby(['sourceIP', 'destIP', 'classification'])
+    # Clean column names and ensure proper selection
+    df = df.rename(columns=lambda x: x.strip())
+    
+    # Extract unique sources and destinations
+    sources = df['sourceIP'].unique().tolist()
+    destinations = df['destIP'].unique().tolist()
+    
+    # Group the data and calculate the sum of counts for each category
+    grouped = (
+        df.groupby(['sourceIP', 'destIP', 'classification'])
         .size()  # Count occurrences of each classification
-        .reset_index(name='count')  # Add a column for counts
+        .reset_index(name='count')  # Add a column for the count
     )
-
-    # Nest classifications under each (sourceIP, destIP) pair
-    nested_df = (
-        reduced_df
-        .groupby(['sourceIP', 'destIP'])
-        .apply(lambda x: x[['classification', 'count']].to_dict(orient='records'))
-        .reset_index(name='classifications')  # Nested classification data
+    
+    # Aggregate to match the required content structure
+    aggregated = (
+        grouped.groupby(['sourceIP', 'destIP'])
+        .agg(
+            values=('count', list),  # List of counts for this pair
+            labels=('classification', list)  # List of unique classifications for this pair
+        )
+        .reset_index()
     )
-
-    # Prepare the final output
+    
+    # Build the "content" array
+    content = [
+        {
+            "source": row['sourceIP'],
+            "destination": row['destIP'],
+            "values": row['values'],
+            "labels": row['labels']
+        }
+        for _, row in aggregated.iterrows()
+    ]
+    
+    # Assemble the final JSON structure
     result = {
-        "sourceIP": nested_df['sourceIP'].unique().tolist(),  # Unique sourceIP list
-        "destIP": nested_df['destIP'].unique().tolist(),  # Unique destIP list
-        "content": nested_df.to_dict(orient='records')  # Maintain the original content structure
+        "sources": sources,
+        "destination": destinations,
+        "content": content
     }
-
+    
     return result
