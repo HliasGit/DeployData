@@ -5,8 +5,6 @@ def df_heatmap():
     df = pd.read_csv('IDS-FILTERED.csv')
     
     # Select only the necessary columns and clean column names
-    source_df = df[['sourceIP']].rename(columns=lambda x: x.strip())
-    destionation_df = df[['destIP']].rename(columns=lambda x: x.strip())
     classification_df = df[['sourceIP', 'destIP', 'classification']].rename(columns=lambda x: x.strip())
 
     # Group by sourceIP and destIP, then count occurrences of each classification
@@ -25,10 +23,11 @@ def df_heatmap():
         .reset_index(name='classifications')  # Nested classification data
     )
 
+    # Prepare the final output
     result = {
-        "sourceIP": nested_df['sourceIP'].tolist(),
-        "destIP": nested_df['destIP'].tolist(),
-        "classifications": nested_df['classifications'].tolist(),
+        "sourceIP": nested_df['sourceIP'].unique().tolist(),  # Unique sourceIP list
+        "destIP": nested_df['destIP'].unique().tolist(),  # Unique destIP list
+        "content": nested_df.to_dict(orient='records')  # Maintain the original content structure
     }
 
     return result
