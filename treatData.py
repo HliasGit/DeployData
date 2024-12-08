@@ -2,12 +2,12 @@ import pandas as pd
 
 def df_heatmap():
     # Read the CSV file
-    df = pd.read_csv('IDS-0406-replacement.csv')
+    df = pd.read_csv('IDS-FILTERED.csv')
     
     # Select only the necessary columns and clean column names
-    source_df = df[[' sourceIP']].rename(columns=lambda x: x.strip())
-    destionation_df = df[[' destIP']].rename(columns=lambda x: x.strip())
-    classification_df = df[[' sourceIP', ' destIP', ' classification']].rename(columns=lambda x: x.strip())
+    source_df = df[['sourceIP']].rename(columns=lambda x: x.strip())
+    destionation_df = df[['destIP']].rename(columns=lambda x: x.strip())
+    classification_df = df[['sourceIP', 'destIP', 'classification']].rename(columns=lambda x: x.strip())
 
     # Group by sourceIP and destIP, then count occurrences of each classification
     reduced_df = (
@@ -25,10 +25,10 @@ def df_heatmap():
         .reset_index(name='classifications')  # Nested classification data
     )
 
-    # Convert the DataFrame to a dictionary
-    source_df = source_df.to_dict(orient='records')
-    destionation_df = destionation_df.to_dict(orient='records')
-    nested_dict = nested_df.to_dict(orient='records')
-    
-    # Return as a dictionary
-    return {"sourceIP": source_df, "destinationIP": destionation_df, "content": nested_dict}
+    result = {
+        "sourceIP": nested_df['sourceIP'].tolist(),
+        "destIP": nested_df['destIP'].tolist(),
+        "classifications": nested_df['classifications'].tolist(),
+    }
+
+    return result
