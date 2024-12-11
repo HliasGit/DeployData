@@ -77,6 +77,11 @@ def get_b2bHistData():
     except:
         bins = None
     
+    log_scale = None
+    try:
+        log_scale = bool(int(request.args.get('log')))
+    except:
+        log = None
 
     if firewall_parameter is None:
         firewall_parameter = B2BHistData.DEFAULT_FIR_CLASS
@@ -87,13 +92,17 @@ def get_b2bHistData():
     if bins is None:
         bins = B2BHistData.DEFAULT_HIST_BINS
 
+    if log_scale is None:
+        log_scale = False
+
     data = B2BHistData.manage_request(
         firewall_parameter=firewall_parameter,
         ids_parameter=ids_parameter,
         bins=bins,
         live_cache=cache,
         glob_data_fir=pl_fir_data,
-        glob_data_ids=pl_ids_data 
+        glob_data_ids=pl_ids_data,
+        log_scale=log_scale
     )
     return jsonify(data)
 

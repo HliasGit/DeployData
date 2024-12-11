@@ -4,7 +4,7 @@ import datetime as dt
 import numpy as np
 
 
-def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bins, fir_str, ids_str):
+def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bins, fir_str, ids_str, log_scale):
     # Ensure time columns are in datetime format
     glob_data_fir = glob_data_fir.with_columns(pl.col("time").str.strptime(pl.Datetime, "%m/%d/%Y %H:%M"))
     glob_data_ids = glob_data_ids.with_columns(pl.col("time").str.strptime(pl.Datetime, "%m/%d/%Y %H:%M"))
@@ -83,6 +83,10 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
         # Count classifications for "bottom"
         for classification in classifications["bottom"]:
             ids_counts.append(ids_interval_data.filter(pl.col(ids_str) == classification).shape[0])
+
+
+        if log_scale:
+            fir_counts = np.log2(np.array(fir_counts) + 1).tolist()
 
         # Append results to content
         data["content"].append({

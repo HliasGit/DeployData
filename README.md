@@ -19,9 +19,11 @@
         - `top` - List of counts for each classification on the top graph
         - `bottom` - List of counts for each classification on the bottom graph
   - Requires a `firParam` and `idsParam` field in the query string. Here
-    - `firParam` - Parameter for the active classification on the firewall graph (top graph)
-    - `idsParam` - Parameter for the active classification on the ids graph (bottom graph) 
+    - `fir` - Parameter for the active classification on the firewall graph (top graph)
+    - `ids` - Parameter for the active classification on the ids graph (bottom graph) 
     - `bins` - Number of bins in which the time is divided into
+    - `log` - Indicates whether the firewall values should be computed logarithmically
+    
 
 # Where to find data?
 
