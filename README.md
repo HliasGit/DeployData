@@ -25,4 +25,10 @@
 
 # Where to find data?
 
-You can find the data in a .tar.xz file by following [this link](https://drive.google.com/file/d/1iOGtpTx0D7dANgrlyvIDru5FUZ0l-SlK/view). Then, extract the data and place it in the root folder of the repository.
+```bash
+wget https://zenodo.org/records/14394131/files/visdata.tar.xz
+tar -xvf visdata.tar.xz
+```
+
+You can find the data in a .tar.xz file by following the link above
+Then, extract the data and place it in the root folder of the repository.
