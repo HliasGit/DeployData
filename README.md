@@ -23,3 +23,6 @@
     - `idsParam` - Parameter for the active classification on the ids graph (bottom graph) 
     - `bins` - Number of bins in which the time is divided into
 
+# Where to find data?
+
+You can find the data in a .tar.xz file by following [this link](https://drive.google.com/file/d/1iOGtpTx0D7dANgrlyvIDru5FUZ0l-SlK/view?usp=drive_link). Then, extract the data and place it in the root folder of the repository.
