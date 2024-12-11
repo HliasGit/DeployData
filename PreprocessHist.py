@@ -33,22 +33,25 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
     min_time = min(fir_min_time, ids_min_time)
     max_time = max(fir_max_time, ids_max_time)
 
-
-    bins = bins + 1
-
     # Calculate the interval in seconds
     total_seconds = (max_time - min_time).total_seconds()
-    interval = total_seconds // bins
-
+    interval = total_seconds / bins
 
     # Create the intervals
-    min_time = min_time + dt.timedelta(seconds=interval/2)
-    mid_points = [min_time + dt.timedelta(seconds=interval * i) for i in range(bins)]
+    # Get the first mid point
+    mid = min_time + dt.timedelta(seconds=interval // 2)
+    
 
-    mid_points_str = [str(mid_point) for mid_point in mid_points]
+    mid_points = [mid + dt.timedelta(seconds=interval * i) for i in range(bins)]
+    intervals = [min_time + dt.timedelta(seconds=interval * i) for i in range(bins)]
+
+    # Add the last data time in the intervals
+    intervals.append(max_time)
+
+    mid_points_str = [mid_point.isoformat() for mid_point in mid_points]
 
     # Truncate the intervals to the nearest minute
-    mid_points_str = [mid_points[:16] for interval in mid_points_str]
+    mid_points_str = [mid_point[:16] for mid_point in mid_points_str]
 
     # Add intervals to data
 
@@ -58,13 +61,13 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
     data["content"] = []
 
     # Iterate over each interval
-    for i in range(bins - 1):  # Avoid accessing intervals_str[i + 1] out of range
+    for i in range(bins):  # Avoid accessing intervals_str[i + 1] out of range
         fir_counts = []  # Reset for each time interval
         ids_counts = []  # Reset for each time interval
 
         # Filter data for the current time interval
-        interval_start = mid_points[i]
-        interval_end = mid_points[i + 1]
+        interval_start = intervals[i]
+        interval_end = intervals[i + 1]
 
         fir_interval_data = glob_data_fir.filter(
             (pl.col("time") >= interval_start) & (pl.col("time") < interval_end)

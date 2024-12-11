@@ -21,12 +21,14 @@ def init():
     except FileExistsError:
         print(" Cache Directory Already Exists")
         pass
-
-    for cache in ALL_CACHES:
-        try:
-            os.mkdir(f"{CACHE_PATH}/{cache}")
-        except FileExistsError:
-            print(f" {cache} Directory Already Exists")
+    finally:
+        for cache in ALL_CACHES:
+            try:
+                os.mkdir(f"{CACHE_PATH}/{cache}")
+            except FileExistsError:
+                print(f" {cache} Directory Already Exists")
+            finally:
+                pass
             
             
 def compute_hash(params: str) -> str:
