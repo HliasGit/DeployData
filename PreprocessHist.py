@@ -45,12 +45,14 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
     min_time = min_time + dt.timedelta(seconds=interval/2)
     mid_points = [min_time + dt.timedelta(seconds=interval * i) for i in range(bins)]
 
+    mid_points_str = [str(mid_point) for mid_point in mid_points]
+
     # Truncate the intervals to the nearest minute
-    intervals_str = [mid_points[:16] for interval in intervals_str]
+    mid_points_str = [mid_points[:16] for interval in mid_points_str]
 
     # Add intervals to data
 
-    data["times"] = intervals_str
+    data["times"] = mid_points_str
 
     # Now we need to count the number of occurrences for each classification in each interval
     data["content"] = []
