@@ -68,8 +68,8 @@ def get_heatMapData():
 
 @app.route("/getB2BHistData")
 def get_b2bHistData():
-    firewall_parameter = request.args.get('firParam')
-    ids_parameter = request.args.get('idsParam')
+    firewall_parameter = request.args.get('fir')
+    ids_parameter = request.args.get('ids')
     
     bins = None
     try:
