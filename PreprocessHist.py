@@ -33,6 +33,9 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
     min_time = min(fir_min_time, ids_min_time)
     max_time = max(fir_max_time, ids_max_time)
 
+
+    bins = bins + 1
+
     # Calculate the interval in seconds
     total_seconds = (max_time - min_time).total_seconds()
     interval = total_seconds / bins
@@ -46,6 +49,9 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
     intervals_str = [interval[:16] for interval in intervals_str]
 
     # Add intervals to data
+    # Add the last time 
+    intervals_str.append(max_time.isoformat()[:16])
+
     data["times"] = intervals_str
 
     # Now we need to count the number of occurrences for each classification in each interval

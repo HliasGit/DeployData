@@ -2,7 +2,7 @@ import pandas as pd
 
 def df_heatmap():
     # Read the CSV file
-    df = pd.read_csv('IDS-FILTERED.csv')
+    df = pd.read_csv('ids.csv')
     
     # Clean column names and ensure proper selection
     df = df.rename(columns=lambda x: x.strip())
