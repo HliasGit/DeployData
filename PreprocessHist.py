@@ -38,19 +38,17 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
 
     # Calculate the interval in seconds
     total_seconds = (max_time - min_time).total_seconds()
-    interval = total_seconds / bins
+    interval = total_seconds // bins
+
 
     # Create the intervals
-    intervals = [min_time + dt.timedelta(seconds=i * interval) for i in range(bins)]
-
-    intervals_str = [interval.isoformat() for interval in intervals]
+    min_time = min_time + dt.timedelta(seconds=interval/2)
+    mid_points = [min_time + dt.timedelta(seconds=interval * i) for i in range(bins)]
 
     # Truncate the intervals to the nearest minute
-    intervals_str = [interval[:16] for interval in intervals_str]
+    intervals_str = [mid_points[:16] for interval in intervals_str]
 
     # Add intervals to data
-    # Add the last time 
-    intervals_str.append(max_time.isoformat()[:16])
 
     data["times"] = intervals_str
 
@@ -63,8 +61,8 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
         ids_counts = []  # Reset for each time interval
 
         # Filter data for the current time interval
-        interval_start = intervals[i]
-        interval_end = intervals[i + 1]
+        interval_start = mid_points[i]
+        interval_end = mid_points[i + 1]
 
         fir_interval_data = glob_data_fir.filter(
             (pl.col("time") >= interval_start) & (pl.col("time") < interval_end)
