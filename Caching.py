@@ -17,13 +17,18 @@ def init():
     # Create cache folder  
     try:
         os.mkdir(CACHE_PATH)
-        for cache in ALL_CACHES:
-            os.mkdir(f"{CACHE_PATH}/{cache}")
         # Create hist folder
     except FileExistsError:
         print(" Cache Directory Already Exists")
         pass
 
+    for cache in ALL_CACHES:
+        try:
+            os.mkdir(f"{CACHE_PATH}/{cache}")
+        except FileExistsError:
+            print(f" {cache} Directory Already Exists")
+            
+            
 def compute_hash(params: str) -> str:
     return hashlib.md5(params.encode()).hexdigest()
 
