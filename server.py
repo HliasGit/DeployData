@@ -70,7 +70,7 @@ def get_heatMapData():
 def get_b2bHistData():
     firewall_parameter = request.args.get('firParam')
     ids_parameter = request.args.get('idsParam')
-    bins = request.args.get('bins')
+    bins = int(request.args.get('bins'))
 
     if firewall_parameter is None:
         firewall_parameter = B2BHistData.DEFAULT_FIR_CLASS

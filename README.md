@@ -11,7 +11,7 @@
 
 - `getB2BHistData` - Get histogram data with time information
   - Returns a JSON object with the following attributes
-    1. `times` - List of time intervals which are binned. Each element is a time point in the format `MM/DD/YYYY HH:MM`
+    1. `times` - List of time intervals which are binned. Each element is a time point in the `ISO FORMAT` and refers to the start of the time interval
     2. `classifications` - List of classifications as requested by the user. This contains the following attributes
         - `top` - List of classification names for the top graph
         - `bottom` - List of classification names for the bottom graph

@@ -41,7 +41,7 @@ def write_data_file(source, hash, data):
 # ============= HISTOGRAM CACHE =============
 def get_latest_hist(fir_str, ids_str, bins, live_cache, glob_data_fir, glob_data_ids):
     
-    string = f"{fir_str}-{ids_str}"
+    string = f"{fir_str}-{ids_str}-{bins}"
 
     hash = compute_hash(string)
     if hash in live_cache["idx"]:
