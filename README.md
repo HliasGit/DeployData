@@ -34,3 +34,13 @@ tar -xvf data.tar.xz
 
 You can find the data in a .tar.xz file by following the link above
 Then, extract the data and place it in the root folder of the repository.
+
+# Running with ngrok
+
+```bash
+mkdir ngrok_bin
+wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
+tar -xvf ngrok-v3-stable-linux-amd64.tgz -C ngrok_bin
+./ngrok_bin/ngrok config add-authtoken <Your_Auth_Token>
+./ngrok_bin/ngrok http 5000
+```

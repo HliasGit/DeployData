@@ -1,4 +1,3 @@
-import json
 import polars as pl
 import datetime as dt
 import numpy as np
@@ -14,91 +13,49 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
     fir_values = glob_data_fir[fir_str].unique().to_list()
     ids_values = glob_data_ids[ids_str].unique().to_list()
 
+    # Time calculations
+    min_time = min(glob_data_fir["time"].min(), glob_data_ids["time"].min())
+    max_time = max(glob_data_fir["time"].max(), glob_data_ids["time"].max())
+    interval = (max_time - min_time).total_seconds() / bins
 
+    # Create intervals and midpoints
+    intervals = [min_time + dt.timedelta(seconds=interval * i) for i in range(bins + 1)]
+    mid_points = [min_time + dt.timedelta(seconds=interval * i + interval/2) for i in range(bins)]
+    mid_points_str = [mid_point.isoformat()[:16] for mid_point in mid_points]
 
-    data = {}
+    # Pre-compute counts for all intervals at once
+    def get_counts(df, class_col, class_values, intervals):
+        counts = []
+        for i in range(len(intervals)-1):
+            interval_data = df.filter(
+                (pl.col("time") >= intervals[i]) & (pl.col("time") < intervals[i+1])
+            ).group_by(class_col).agg(pl.count())
+            
+            # Create ordered counts list
+            interval_counts = [0] * len(class_values)
+            for row in interval_data.iter_rows():
+                try:
+                    idx = class_values.index(row[0])
+                    interval_counts[idx] = row[1]
+                except ValueError:
+                    continue
+                    
+            counts.append(interval_counts)
+        return counts
 
-    # Extract the unique classifications
-    classifications = {
-        "top": fir_values,
-        "bottom": ids_values
+    # Get counts for both datasets
+    fir_counts = get_counts(glob_data_fir, fir_str, fir_values, intervals)
+    ids_counts = get_counts(glob_data_ids, ids_str, ids_values, intervals)
+
+    # Apply log transformation if needed
+    if mode == 'log':
+        fir_counts = [np.log2(np.array(counts) + 1).tolist() for counts in fir_counts]
+
+    # Build result dictionary
+    data = {
+        "classifications": {"top": fir_values, "bottom": ids_values},
+        "times": mid_points_str,
+        "content": [{"top": fir, "bottom": ids} for fir, ids in zip(fir_counts, ids_counts)]
     }
-
-    data["classifications"] = classifications
-
-    # Extract the minimum and maximum time values for both datasets
-    fir_min_time = glob_data_fir["time"].min()
-    ids_min_time = glob_data_ids["time"].min()
-    fir_max_time = glob_data_fir["time"].max()
-    ids_max_time = glob_data_ids["time"].max()
-
-    # Calculate overall min and max time
-    min_time = min(fir_min_time, ids_min_time)
-    max_time = max(fir_max_time, ids_max_time)
-
-    # Calculate the interval in seconds
-    total_seconds = (max_time - min_time).total_seconds()
-    interval = total_seconds / bins
-
-    # Create the intervals
-    # Get the first mid point
-    mid = min_time + dt.timedelta(seconds=interval // 2)
-    
-
-    mid_points = [mid + dt.timedelta(seconds=interval * i) for i in range(bins)]
-    intervals = [min_time + dt.timedelta(seconds=interval * i) for i in range(bins)]
-
-    # Add the last data time in the intervals
-    intervals.append(max_time)
-
-    mid_points_str = [mid_point.isoformat() for mid_point in mid_points]
-
-    # Truncate the intervals to the nearest minute
-    mid_points_str = [mid_point[:16] for mid_point in mid_points_str]
-
-    # Add intervals to data
-
-    data["times"] = mid_points_str
-
-    # Now we need to count the number of occurrences for each classification in each interval
-    data["content"] = []
-
-
-    # Iterate over each interval
-    for i in range(bins):  # Avoid accessing intervals_str[i + 1] out of range
-        fir_counts = []  # Reset for each time interval
-        ids_counts = []  # Reset for each time interval
-
-        # Filter data for the current time interval
-        interval_start = intervals[i]
-        interval_end = intervals[i + 1]
-
-        fir_interval_data = glob_data_fir.filter(
-            (pl.col("time") >= interval_start) & (pl.col("time") < interval_end)
-        )
-        ids_interval_data = glob_data_ids.filter(
-            (pl.col("time") >= interval_start) & (pl.col("time") < interval_end)
-        )
-
-        # Count classifications for "top"
-        for classification in classifications["top"]:
-            if mode == 'log' or mode == 'count':
-                fir_counts.append(fir_interval_data.filter(pl.col(fir_str) == classification).shape[0])
-            elif mode == 'unique':
-                fir_counts.append(fir_interval_data.filter(pl.col(fir_str) == classification)[fir_str].unique().shape[0])
-
-        # Count classifications for "bottom"
-        for classification in classifications["bottom"]:
-                ids_counts.append(ids_interval_data.filter(pl.col(ids_str) == classification).shape[0])
-
-
-        if mode == 'log':
-            fir_counts = np.log2(np.array(fir_counts) + 1).tolist()
-
-        # Append results to content
-        data["content"].append({
-            "top": fir_counts,
-            "bottom": ids_counts
-        })
 
     return data
