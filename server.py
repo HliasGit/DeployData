@@ -7,7 +7,7 @@ import polars as pl
 
 
 # Module with functions that manage requests for the heatmap
-import treatData
+import HeatMapData
 
 # Module with functions that manage requests for the histogram
 import B2BHistData
@@ -25,6 +25,10 @@ pl_ids_data_aggregated_by_time = None
 # Cache that contains aggregated data with paths to files
 cache = {
     "hist": {
+        "idx": set(),
+        "data": {}
+    },
+    "heat": {
         "idx": set(),
         "data": {}
     }
@@ -63,7 +67,11 @@ def hello_world():
 
 @app.route("/getHeatMapData")
 def get_heatMapData():
-    data = treatData.df_heatmap()
+    protocol_sel = "Generic Protocol Command Decode"
+    data = HeatMapData.manage_heatmap_request(
+        live_cache=cache,
+        protocol=protocol_sel
+    )
     return jsonify(data)
 
 @app.route("/getB2BHistData")
