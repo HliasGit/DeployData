@@ -22,7 +22,7 @@
     - `fir` - Parameter for the active classification on the firewall graph (top graph)
     - `ids` - Parameter for the active classification on the ids graph (bottom graph) 
     - `bins` - Number of bins in which the time is divided into
-    - `log` - Indicates whether the firewall values should be computed logarithmically
+    - `mode` - Provides additional information about the firewall visualization (`count` for default, `log` for log scale, `unique` for unique counts).
     
 
 # Where to find data?

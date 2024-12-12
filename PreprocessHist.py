@@ -4,14 +4,17 @@ import datetime as dt
 import numpy as np
 
 
-def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bins, fir_str, ids_str, log_scale):
+def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bins, fir_str, ids_str, mode):
     # Ensure time columns are in datetime format
     glob_data_fir = glob_data_fir.with_columns(pl.col("time").str.strptime(pl.Datetime, "%m/%d/%Y %H:%M"))
     glob_data_ids = glob_data_ids.with_columns(pl.col("time").str.strptime(pl.Datetime, "%m/%d/%Y %H:%M"))
 
+
     # Get the unique values of the fir_str and ids_str
     fir_values = glob_data_fir[fir_str].unique().to_list()
     ids_values = glob_data_ids[ids_str].unique().to_list()
+
+
 
     data = {}
 
@@ -60,6 +63,7 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
     # Now we need to count the number of occurrences for each classification in each interval
     data["content"] = []
 
+
     # Iterate over each interval
     for i in range(bins):  # Avoid accessing intervals_str[i + 1] out of range
         fir_counts = []  # Reset for each time interval
@@ -78,14 +82,17 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
 
         # Count classifications for "top"
         for classification in classifications["top"]:
-            fir_counts.append(fir_interval_data.filter(pl.col(fir_str) == classification).shape[0])
+            if mode == 'log' or mode == 'count':
+                fir_counts.append(fir_interval_data.filter(pl.col(fir_str) == classification).shape[0])
+            elif mode == 'unique':
+                fir_counts.append(fir_interval_data.filter(pl.col(fir_str) == classification)[fir_str].unique().shape[0])
 
         # Count classifications for "bottom"
         for classification in classifications["bottom"]:
-            ids_counts.append(ids_interval_data.filter(pl.col(ids_str) == classification).shape[0])
+                ids_counts.append(ids_interval_data.filter(pl.col(ids_str) == classification).shape[0])
 
 
-        if log_scale:
+        if mode == 'log':
             fir_counts = np.log2(np.array(fir_counts) + 1).tolist()
 
         # Append results to content
