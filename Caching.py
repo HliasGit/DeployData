@@ -61,13 +61,14 @@ def get_latest_hist(fir_str, ids_str, bins, live_cache, glob_data_fir, glob_data
 
     data, res = load_data_file(HIST_PATH, hash)
     if not res:
-        print("Not in STORAGE CACHE")
+        print("Not in STORAGE CACHE", end=" | ")
         live_cache["idx"].add(hash)
         live_cache["data"][hash] = ph.preprocess_hist(glob_data_fir, glob_data_ids, bins, fir_str, ids_str, mode)
         write_data_file(HIST_PATH, hash, live_cache["data"][hash])
+        print(f"Writing to STORAGE CACHE {hash}")
         return live_cache["data"][hash]
     else:
-        print("HIT in STORAGE CACHE")
+        print(f"HIT in STORAGE CACHE {hash}")
         live_cache["idx"].add(hash)
         live_cache["data"][hash] = data
         return data
