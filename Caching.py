@@ -11,8 +11,9 @@ import time
 CACHE_PATH = "cache"
 HIST_PATH = "hist"
 HEAT_PATH = "heat"
+TIME_PATH = "time"
 
-ALL_CACHES = [HIST_PATH, HEAT_PATH]
+ALL_CACHES = [HIST_PATH, HEAT_PATH, TIME_PATH]
 
 
 def init():
@@ -72,6 +73,25 @@ def get_latest_hist(fir_str, ids_str, bins, live_cache, glob_data_fir, glob_data
         live_cache["idx"].add(hash)
         live_cache["data"][hash] = data
         return data
+    
+def get_latest_timeline(live_cache, glob_data_fir, glob_data_ids):
+
+    string = "timeline"
+    hash = compute_hash(string)
+    if hash in live_cache["idx"]:
+        print("HIT in LIVE CACHE")
+        return live_cache["data"][hash]
+    
+    print("Not in LIVE CACHE")
+    data, res = load_data_file(TIME_PATH, hash)
+    if not res: 
+        print("Not in STORAGE CACHE")
+        live_cache["idx"].add(hash)
+        live_cache["data"][hash] = ph.preprocess_timeline(glob_data_fir, glob_data_ids)
+        write_data_file(TIME_PATH, hash, live_cache["data"][hash])
+        print(f"Writing to STORAGE CACHE {hash}")
+        return live_cache["data"][hash]
+    
 
 # ============= HISTOGRAM CACHE =============
 

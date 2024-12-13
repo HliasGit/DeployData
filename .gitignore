@@ -1,3 +1,6 @@
 /IDS-0406-replacement.csv
 /__pycache__
 /cache
+firewall.csv
+ids.csv
+*.tar.xz

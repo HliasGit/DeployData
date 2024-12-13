@@ -31,6 +31,10 @@ cache = {
     "heat": {
         "idx": set(),
         "data": {}
+    },
+    "timeline": {
+        "idx": set(),
+        "data": {}
     }
 }
 
@@ -108,6 +112,16 @@ def get_b2bHistData():
         glob_data_ids=pl_ids_data,
         mode=mode
     )
+    return jsonify(data)
+
+@app.route("/getHistoTimeLineData")
+def get_histoTimeLineData():
+    data = B2BHistData.manage_timeline_request(
+        live_cache=cache,
+        glob_data_fir=pl_fir_data,
+        glob_data_ids=pl_ids_data
+    )
+
     return jsonify(data)
 
 if __name__ == "__main__":

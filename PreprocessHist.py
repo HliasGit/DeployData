@@ -19,8 +19,11 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
     interval = (max_time - min_time).total_seconds() / bins
 
     # Create intervals and midpoints
-    intervals = [min_time + dt.timedelta(seconds=interval * i) for i in range(bins + 1)]
-    mid_points = [min_time + dt.timedelta(seconds=interval * i + interval/2) for i in range(bins)]
+    intervals = [min_time + dt.timedelta(seconds=interval * i) for i in range(bins+1)]
+    intervals_str = [interval.isoformat()[:16] for interval in intervals]
+    print(f"Sending {len(intervals_str)} intervals")
+
+    mid_points = [min_time + dt.timedelta(seconds=interval * i + i * interval/2) for i in range(bins)]
     mid_points_str = [mid_point.isoformat()[:16] for mid_point in mid_points]
 
     # Pre-compute counts for all intervals at once
@@ -54,8 +57,28 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
     # Build result dictionary
     data = {
         "classifications": {"top": fir_values, "bottom": ids_values},
-        "times": mid_points_str,
+        "times": intervals_str,
         "content": [{"top": fir, "bottom": ids} for fir, ids in zip(fir_counts, ids_counts)]
     }
+
+    return data
+
+
+def preprocess_timeline(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame):
+    # Ensure time columns are in datetime format
+    glob_data_fir = glob_data_fir.with_columns(pl.col("time").str.strptime(pl.Datetime, "%m/%d/%Y %H:%M"))
+    glob_data_ids = glob_data_ids.with_columns(pl.col("time").str.strptime(pl.Datetime, "%m/%d/%Y %H:%M"))
+
+    # Time calculations
+    min_time = min(glob_data_fir["time"].min(), glob_data_ids["time"].min())
+    max_time = max(glob_data_fir["time"].max(), glob_data_ids["time"].max())
+
+    data = {
+        "times" : {
+            "begin" : min_time.isoformat()[:16],
+            "end" : max_time.isoformat()[:16]
+        }
+    }
+
 
     return data
