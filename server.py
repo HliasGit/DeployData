@@ -82,6 +82,8 @@ def get_heatMapData():
 def get_b2bHistData():
     firewall_parameter = request.args.get('fir')
     ids_parameter = request.args.get('ids')
+    start = request.args.get('start')
+    end = request.args.get('end')
     
     bins = None
     try:
@@ -110,7 +112,9 @@ def get_b2bHistData():
         live_cache=cache,
         glob_data_fir=pl_fir_data,
         glob_data_ids=pl_ids_data,
-        mode=mode
+        mode=mode,
+        start=start,
+        end=end
     )
     return jsonify(data)
 
