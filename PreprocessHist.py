@@ -136,14 +136,14 @@ def preprocess_timeline(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame
         "content": {
             "counts": counts,
             "times": intervals_str,
-            "events": {
+            "events": [
                 {
                     "time": "2012-04-05T18:06",
                     "description": "First malicious event registered by the IDS."
                 },
                 {
                     "time": "2012-04-05T20:44",
-                    "description": "The attack starts: many ftp connections are attempter and denied. SSH connections (port 22) are attempted and established. We believe the system is continuously subject to malicious IRC activity"
+                    "description": "The attack starts: many ftp connections are attempter and denied. SSH connections (port 22) are attempted and established. We believe the system is continuously subject to malicious IRC activity, which could be associated to external code execution through reverse shells."
                 },
                 {
                     "time": "2012-04-06T00:00",
@@ -151,9 +151,21 @@ def preprocess_timeline(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame
                 },
                 {
                     "time": "2012-04-06T17:27",
-                    "description": "The firewall is brought down. The IDS identifies a high number of potential corporate privacy violations"
+                    "description": "The firewall is brought down and information is likely exfiltrated through unknown vectors. The IDS identifies a high number of potential corporate privacy violations."
+                },
+                {
+                    "time": "2012-04-06T17:45",
+                    "description": "The firewall is restarted (command executed logs), most likely by a network administrator."
+                },
+                {
+                    "time": "2012-04-06T18:13",
+                    "description": "A single ingreslock packet is detected by the Firewall and blocked. It represents a possible vector for escalation of priviledges in the inner HQ network."
+                },
+                {
+                    "time": "2012-04-06T21:30",
+                    "description": "A possible attack with a UPD packet is detected by the firewall and not blocked. This could be another vector for escalation of priviledges through a Trojan and a Backdoor."
                 }
-            }
+            ]
         }
     }
 
