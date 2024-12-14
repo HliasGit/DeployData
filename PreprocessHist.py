@@ -66,9 +66,28 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
     elif mode == 'unique':
         fir_counts = [[ 1 if count > 0 else 0 for count in counts] for counts in fir_counts]
 
-    # sort fir_values and ids_values alphabetically
-    fir_values = sorted(fir_values)
-    ids_values = sorted(ids_values)
+    
+    # Convert to numpy arrays for vectorized operations
+    fir_values_np = np.array(fir_values)
+    fir_counts_np = np.array(fir_counts)
+    ids_values_np = np.array(ids_values)
+    ids_counts_np = np.array(ids_counts)
+
+    # Get sorted indices
+    fir_sorted_indices = np.argsort(fir_values_np)
+    ids_sorted_indices = np.argsort(ids_values_np)
+
+    # Sort values and counts based on sorted indices
+    fir_values_sorted = fir_values_np[fir_sorted_indices]
+    fir_counts_sorted = fir_counts_np[:, fir_sorted_indices]
+    ids_values_sorted = ids_values_np[ids_sorted_indices]
+    ids_counts_sorted = ids_counts_np[:, ids_sorted_indices]
+
+    # Convert back to lists if needed
+    fir_values = fir_values_sorted.tolist()
+    fir_counts = fir_counts_sorted.tolist()
+    ids_values = ids_values_sorted.tolist()
+    ids_counts = ids_counts_sorted.tolist()
 
     # Build result dictionary
     data = {
@@ -116,7 +135,25 @@ def preprocess_timeline(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame
         },
         "content": {
             "counts": counts,
-            "times": intervals_str
+            "times": intervals_str,
+            "events": {
+                {
+                    "time": "2012-04-05T18:06",
+                    "description": "First malicious event registered by the IDS."
+                },
+                {
+                    "time": "2012-04-05T20:44",
+                    "description": "The attack starts: many ftp connections are attempter and denied. SSH connections (port 22) are attempted and established. We believe the system is continuously subject to malicious IRC activity"
+                },
+                {
+                    "time": "2012-04-06T00:00",
+                    "description": "Data is exfiltrated through outbound SSH connections to the web servers. IDS signals malicious activity."
+                },
+                {
+                    "time": "2012-04-06T17:27",
+                    "description": "The firewall is brought down. The IDS identifies a high number of potential corporate privacy violations"
+                }
+            }
         }
     }
 
