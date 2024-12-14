@@ -3,20 +3,28 @@ import datetime as dt
 import numpy as np
 
 
-def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bins, fir_str, ids_str, mode):
+def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bins, fir_str, ids_str, mode, start, end):
     # Ensure time columns are in datetime format
     glob_data_fir = glob_data_fir.with_columns(pl.col("time").str.strptime(pl.Datetime, "%m/%d/%Y %H:%M"))
     glob_data_ids = glob_data_ids.with_columns(pl.col("time").str.strptime(pl.Datetime, "%m/%d/%Y %H:%M"))
-
 
     # Get the unique values of the fir_str and ids_str
     fir_values = glob_data_fir[fir_str].unique().to_list()
     ids_values = glob_data_ids[ids_str].unique().to_list()
 
-    # Time calculations
-    min_time = min(glob_data_fir["time"].min(), glob_data_ids["time"].min())
-    max_time = max(glob_data_fir["time"].max(), glob_data_ids["time"].max())
+    # Time calculations with start/end support
+    data_min_time = min(glob_data_fir["time"].min(), glob_data_ids["time"].min())
+    data_max_time = max(glob_data_fir["time"].max(), glob_data_ids["time"].max())
+    min_time = dt.datetime.strptime(start, "%Y-%m-%d %H:%M:%S") if start else data_min_time 
+    max_time = dt.datetime.strptime(end, "%Y-%m-%d %H:%M:%S") if end else data_max_time
     interval = (max_time - min_time).total_seconds() / bins
+
+    print(f"Time range: {min_time} - {max_time}")
+    print(data_max_time, data_min_time)
+
+    # Filter data based on time range
+    glob_data_fir = glob_data_fir.filter((pl.col("time") >= min_time) & (pl.col("time") <= max_time))
+    glob_data_ids = glob_data_ids.filter((pl.col("time") >= min_time) & (pl.col("time") <= max_time))
 
     # Create intervals and midpoints
     intervals = [min_time + dt.timedelta(seconds=interval * i) for i in range(bins+1)]
@@ -55,6 +63,10 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
         fir_counts = [np.log2(np.array(counts) + 1).tolist() for counts in fir_counts]
     elif mode == 'unique':
         fir_counts = [[ 1 if count > 0 else 0 for count in counts] for counts in fir_counts]
+
+    # sort fir_values and ids_values alphabetically
+    fir_values = sorted(fir_values)
+    ids_values = sorted(ids_values)
 
     # Build result dictionary
     data = {
