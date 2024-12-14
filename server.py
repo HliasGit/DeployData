@@ -12,6 +12,8 @@ import HeatMapData
 # Module with functions that manage requests for the histogram
 import B2BHistData
 
+import PieChartData
+
 
 FIREWALL_FILE = 'firewall.csv'
 IDS_FILE = 'ids.csv'
@@ -33,6 +35,10 @@ cache = {
         "data": {}
     },
     "timeline": {
+        "idx": set(),
+        "data": {}
+    },
+    "piechart": {
         "idx": set(),
         "data": {}
     }
@@ -78,10 +84,19 @@ def get_heatMapData():
     )
     return jsonify(data)
 
+@app.route("/getPieChartData")
+def get_pieChartData():
+    data = PieChartData.manage_pie_chart_data(
+        live_cache=cache
+    )
+    return jsonify(data)
+
 @app.route("/getB2BHistData")
 def get_b2bHistData():
     firewall_parameter = request.args.get('fir')
     ids_parameter = request.args.get('ids')
+    start = request.args.get('start')
+    end = request.args.get('end')
     
     bins = None
     try:
@@ -110,7 +125,9 @@ def get_b2bHistData():
         live_cache=cache,
         glob_data_fir=pl_fir_data,
         glob_data_ids=pl_ids_data,
-        mode=mode
+        mode=mode,
+        start=start,
+        end=end
     )
     return jsonify(data)
 
