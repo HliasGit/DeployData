@@ -89,6 +89,25 @@ def preprocess_timeline(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame
     min_time = min(glob_data_fir["time"].min(), glob_data_ids["time"].min())
     max_time = max(glob_data_fir["time"].max(), glob_data_ids["time"].max())
 
+    # Count the number of events per minute
+    fir_counts = glob_data_fir.group_by(pl.col("time")).agg(pl.count()).sort("time")
+
+    bins = 1000
+
+    interval = (max_time - min_time).total_seconds() / bins
+    intervals = [min_time + dt.timedelta(seconds=interval * i) for i in range(bins+1)]
+    intervals_str = [interval.isoformat()[:16] for interval in intervals]
+
+
+    # Get the counts based on the intervals
+    counts = []
+    for i in range(len(intervals)-1):
+        interval_data = fir_counts.filter(
+            (pl.col("time") >= intervals[i]) & (pl.col("time") < intervals[i+1])
+        )
+        print(f"{interval_data}")
+
+        counts.append(sum(interval_data["count"].to_list()))
 
     data = {
         "times" : {
@@ -96,6 +115,8 @@ def preprocess_timeline(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame
             "end" : max_time.isoformat()[:16],
         },
         "content": {
+            "counts": counts,
+            "times": intervals_str
         }
     }
 

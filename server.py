@@ -3,6 +3,8 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import Caching as ch
 
+from constants import *
+
 import polars as pl
 
 
@@ -26,19 +28,19 @@ pl_ids_data_aggregated_by_time = None
 
 # Cache that contains aggregated data with paths to files
 cache = {
-    "hist": {
+    HIST_PATH: {
         "idx": set(),
         "data": {}
     },
-    "heat": {
+    HEAT_PATH: {
         "idx": set(),
         "data": {}
     },
-    "timeline": {
+    TIME_PATH: {
         "idx": set(),
         "data": {}
     },
-    "piechart": {
+    PIE_PATH: {
         "idx": set(),
         "data": {}
     }
@@ -52,7 +54,7 @@ def load_fir():
 
 
 print("Initializing cache...")
-ch.init()
+ch.init(global_cache=cache)
 
 print("Loading IDS data...")
 pl_ids_data = load_ids()
@@ -72,8 +74,15 @@ CORS(app)
 
 @app.route("/")
 def hello_world():
-   
-    return "<p>Hello, World!</p>"
+    data = None
+    from base64 import b64decode
+    with open("input_string.txt", "r") as file:
+        data = file.read()
+        data = b64decode(data).decode("utf-8")
+    
+    return f"""
+    {data}
+    """                       
 
 @app.route("/getHeatMapData")
 def get_heatMapData():
