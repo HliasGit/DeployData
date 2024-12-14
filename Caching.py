@@ -1,6 +1,7 @@
 import hashlib
 import PreprocessHist as ph
 import preprocess_heat as ph_heat
+import preprocess_pie as ph_pie
 
 import os
 import json
@@ -126,3 +127,31 @@ def get_latest_heatmap(live_cache, protocol):
         return data
 
 # ============= HEATMAP CACHE =============
+
+# ============= PIECHART CACHE =============
+def get_latest_pie(live_cache):
+    
+    string = f"only-piechart"
+
+    hash = compute_hash(string)
+
+    if hash in live_cache["idx"]:
+        print("HIT in LIVE CACHE")
+        return live_cache["data"][hash]
+    
+    print("Not in LIVE CACHE")
+
+    data, res = load_data_file(HEAT_PATH, hash)
+    if not res:
+        print("Not in STORAGE CACHE")
+        live_cache["idx"].add(hash)
+        live_cache["data"][hash] = ph_pie.preprocess_pie()
+        write_data_file(HIST_PATH, hash, live_cache["data"][hash])
+        return live_cache["data"][hash]
+    else:
+        print("HIT in STORAGE CACHE")
+        live_cache["idx"].add(hash)
+        live_cache["data"][hash] = data
+        return data
+
+# ============= PIECHART CACHE =============

@@ -12,6 +12,8 @@ import HeatMapData
 # Module with functions that manage requests for the histogram
 import B2BHistData
 
+import PieChartData
+
 
 FIREWALL_FILE = 'firewall.csv'
 IDS_FILE = 'ids.csv'
@@ -33,6 +35,10 @@ cache = {
         "data": {}
     },
     "timeline": {
+        "idx": set(),
+        "data": {}
+    },
+    "piechart": {
         "idx": set(),
         "data": {}
     }
@@ -75,6 +81,13 @@ def get_heatMapData():
     data = HeatMapData.manage_heatmap_request(
         live_cache=cache,
         protocol=protocol_sel
+    )
+    return jsonify(data)
+
+@app.route("/getPieChartData")
+def get_pieChartData():
+    data = PieChartData.manage_pie_chart_data(
+        live_cache=cache
     )
     return jsonify(data)
 
