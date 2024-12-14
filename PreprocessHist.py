@@ -9,9 +9,7 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
     glob_data_ids = glob_data_ids.with_columns(pl.col("time").str.strptime(pl.Datetime, "%m/%d/%Y %H:%M"))
 
     # Get the unique values of the fir_str and ids_str
-    fir_values = glob_data_fir[fir_str].unique().to_list()
-    ids_values = glob_data_ids[ids_str].unique().to_list()
-
+   
     # Time calculations with start/end support
     data_min_time = min(glob_data_fir["time"].min(), glob_data_ids["time"].min())
     data_max_time = max(glob_data_fir["time"].max(), glob_data_ids["time"].max())
@@ -25,6 +23,10 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
     # Filter data based on time range
     glob_data_fir = glob_data_fir.filter((pl.col("time") >= min_time) & (pl.col("time") <= max_time))
     glob_data_ids = glob_data_ids.filter((pl.col("time") >= min_time) & (pl.col("time") <= max_time))
+    
+    fir_values = glob_data_fir[fir_str].unique().to_list()
+    ids_values = glob_data_ids[ids_str].unique().to_list()
+
 
     # Create intervals and midpoints
     intervals = [min_time + dt.timedelta(seconds=interval * i) for i in range(bins+1)]
@@ -87,7 +89,6 @@ def preprocess_timeline(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame
     min_time = min(glob_data_fir["time"].min(), glob_data_ids["time"].min())
     max_time = max(glob_data_fir["time"].max(), glob_data_ids["time"].max())
 
-    # TODO: Implement computation for the timeline
 
     data = {
         "times" : {
