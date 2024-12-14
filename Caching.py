@@ -91,7 +91,11 @@ def get_latest_timeline(live_cache, glob_data_fir, glob_data_ids):
         write_data_file(TIME_PATH, hash, live_cache["data"][hash])
         print(f"Writing to STORAGE CACHE {hash}")
         return live_cache["data"][hash]
-    
+    else:
+        print("HIT in STORAGE CACHE")
+        live_cache["idx"].add(hash)
+        live_cache["data"][hash] = data
+        return data
 
 # ============= HISTOGRAM CACHE =============
 

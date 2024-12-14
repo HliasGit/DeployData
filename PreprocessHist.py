@@ -53,6 +53,8 @@ def preprocess_hist(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame, bi
     # Apply log transformation if needed
     if mode == 'log':
         fir_counts = [np.log2(np.array(counts) + 1).tolist() for counts in fir_counts]
+    elif mode == 'unique':
+        fir_counts = [[ 1 if count > 0 else 0 for count in counts] for counts in fir_counts]
 
     # Build result dictionary
     data = {
@@ -73,10 +75,14 @@ def preprocess_timeline(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame
     min_time = min(glob_data_fir["time"].min(), glob_data_ids["time"].min())
     max_time = max(glob_data_fir["time"].max(), glob_data_ids["time"].max())
 
+    # TODO: Implement computation for the timeline
+
     data = {
         "times" : {
             "begin" : min_time.isoformat()[:16],
-            "end" : max_time.isoformat()[:16]
+            "end" : max_time.isoformat()[:16],
+        },
+        "content": {
         }
     }
 
