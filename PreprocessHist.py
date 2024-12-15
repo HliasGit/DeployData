@@ -142,28 +142,40 @@ def preprocess_timeline(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame
                     "description": "First malicious event registered by the IDS."
                 },
                 {
-                    "time": "2012-04-05T20:44",
-                    "description": "The attack starts: many ftp connections are attempter and denied. SSH connections (port 22) are attempted and established. We believe the system is continuously subject to malicious IRC activity, which could be associated to external code execution through reverse shells."
+                    "time": "2012-04-05T20:30",
+                    "description": "The attack starts: many ftp connections are attempted and denied. SSH connections (port 22) are attempted and established. We believe the system is continuously subject to malicious IRC activity, which could be associated to external code execution through reverse shells."
                 },
                 {
                     "time": "2012-04-06T00:00",
-                    "description": "Data is exfiltrated through outbound SSH connections to the web servers. IDS signals malicious activity."
+                    "description": "A major second event occurs: a large number of SSH connections is established with the web servers. IDS signals malicious activity. This could be a possible data leak."
+                },
+                {
+                    "time": "2012-04-06T08:00",
+                    "description": "The system is continuously stressed by a high number of connections. Throughout this time, which can be assumed to be the time of normal operation of the Bank of Money, there is no explicit attack, and the IDS only signals malformed packets."
                 },
                 {
                     "time": "2012-04-06T17:27",
-                    "description": "The firewall is brought down and information is likely exfiltrated through unknown vectors. The IDS identifies a high number of potential corporate privacy violations."
+                    "description": "The firewall is disabled and information is likely exfiltrated through unknown vectors, as signaled by the IDS. It is impossible to know if the firewall was disabled down by an operator or by an attacker, but there is no notable executed command prior to this event. Thus, it is likely that the firewall was disabled by an attacker."
                 },
                 {
                     "time": "2012-04-06T17:45",
-                    "description": "The firewall is restarted (command executed logs), most likely by a network administrator."
+                    "description": "The firewall is restarted, most likely by a network administrator."
                 },
                 {
                     "time": "2012-04-06T18:13",
                     "description": "A single ingreslock packet is detected by the Firewall and blocked. It represents a possible vector for escalation of priviledges in the inner HQ network."
                 },
                 {
+                    "time": "2012-04-06T18:30",
+                    "description": "A large number of FTP packets are detected by the firewall and blocked. FTP packets may have been used by the attacker(s) during the previous data leak."
+                },
+                {
                     "time": "2012-04-06T21:30",
-                    "description": "A possible attack with a UPD packet is detected by the firewall and not blocked. This could be another vector for escalation of priviledges through a Trojan and a Backdoor."
+                    "description": "A possible attack with UPD packets is detected by the firewall and not blocked. This could be another vector for escalation of priviledges through Trojans and Backdoors through the UDP protocol."
+                },
+                {
+                    "time": "2012-04-06T22:10",
+                    "description": "From this point on, the system receives a number of DNS and NETBIOS packets, which could indicate a possible NETBIOS Poisoning attack."
                 }
             ]
         }
