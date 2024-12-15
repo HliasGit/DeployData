@@ -152,7 +152,7 @@ def get_histoTimeLineData():
 
 if __name__ == "__main__":
     print("Initializing cache...")
-    ch.init()
+    ch.init(global_cache=cache)
 
     print("Loading IDS data...")
     pl_ids_data = load_ids()
