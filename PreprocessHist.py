@@ -124,7 +124,6 @@ def preprocess_timeline(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame
         interval_data = fir_counts.filter(
             (pl.col("time") >= intervals[i]) & (pl.col("time") < intervals[i+1])
         )
-        print(f"{interval_data}")
 
         counts.append(sum(interval_data["count"].to_list()))
 

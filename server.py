@@ -62,6 +62,12 @@ print("Loading firewall data...")
 pl_fir_data = load_fir()
 
 
+print("IDS data columns:", pl_ids_data.columns)
+print("Firewall data columns:", pl_fir_data.columns)
+
+fir_columns = pl_fir_data.columns
+ids_columns = pl_ids_data.columns
+
 # ========================================
 # ========================================
 # ========================================
@@ -86,17 +92,42 @@ def hello_world():
 
 @app.route("/getHeatMapData")
 def get_heatMapData():
-    protocol_sel = "Generic Protocol Command Decode"
+    # Get the class parameter
+    class_sel = request.args.get('class')
+    start = request.args.get('start')
+    end = request.args.get('end')
+
+
+    if class_sel is None:
+        class_sel = HeatMapData.DEFAULT_CLASS
+
+    origin = HeatMapData.DEFAULT_ORIGIN
+
+    if class_sel in fir_columns:
+        origin = 'fir'
+
+    if class_sel in ids_columns:
+        origin = 'ids'
+
+
     data = HeatMapData.manage_heatmap_request(
         live_cache=cache,
-        protocol=protocol_sel
+        class_sel = class_sel,
+        origin = origin,
+        start = start,
+        end = end,
+        glob_data_fir = pl_fir_data,
+        glob_data_ids = pl_ids_data
+
     )
     return jsonify(data)
 
 @app.route("/getPieChartData")
 def get_pieChartData():
     data = PieChartData.manage_pie_chart_data(
-        live_cache=cache
+        live_cache=cache,
+        glob_data_fir=pl_fir_data,
+        glob_data_ids=pl_ids_data
     )
     return jsonify(data)
 

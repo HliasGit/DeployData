@@ -1,12 +1,10 @@
 import pandas as pd
+import polars as pl
 
-def preprocess_pie():
+def preprocess_pie(glob_data_fir: pl.DataFrame, glob_data_ids):
     # Read the CSV file
-    df = pd.read_csv('firewall.csv')
+    df = glob_data_fir.to_pandas()
     
-    # Clean column names and ensure proper selection
-    df = df.rename(columns=lambda x: x.strip())
-
     # drop every column but Operations and Destination Service
     df = df[['Operation', 'Destination service']]
 
