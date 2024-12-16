@@ -170,7 +170,7 @@ def preprocess_timeline(glob_data_fir: pl.DataFrame, glob_data_ids: pl.DataFrame
                 },
                 {
                     "time": "2012-04-06T21:30",
-                    "description": "A possible attack with UPD packets is detected by the firewall and not blocked. This could be another vector for escalation of priviledges through Trojans and Backdoors through the UDP protocol."
+                    "description": "A possible attack with UDP packets is detected by the firewall and not blocked. This could be another vector for escalation of priviledges through Trojans and Backdoors through the UDP protocol."
                 },
                 {
                     "time": "2012-04-06T22:10",
