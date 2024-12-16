@@ -112,3 +112,9 @@ def get_latest_pie(live_cache, glob_data_fir, glob_data_ids):
     check_storage_cache(PIE_PATH)
     hash = compute_hash("only-piechart")
     return get_cached_data(PIE_PATH, hash, live_cache, ph_pie.preprocess_pie, glob_data_fir, glob_data_ids)
+
+# ============= CHORD DIAGRAM CACHE =============
+def get_latest_pie(live_cache, glob_data_fir):
+    check_storage_cache(CHORD_PATH)
+    hash = compute_hash("chord")
+    return get_cached_data(CHORD_PATH, hash, live_cache, ph_chord.prepare_chord_data, glob_data_fir)
