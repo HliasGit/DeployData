@@ -4,3 +4,5 @@
 firewall.csv
 ids.csv
 *.tar.xz
+MC2-CSVFirewallandIDSlogs 2/
+priority_ip.ipynb

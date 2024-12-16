@@ -139,7 +139,8 @@ def get_pieChartData():
 @app.route("/getChordDiagramData")
 def get_ChordDiagramData():
     data = ChordData.manage_chord_diagram_data(
-        live_cache=cache
+        live_cache=cache,
+        glob_data_fir=pl_fir_data
     )
     return jsonify(data)
 
