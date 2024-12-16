@@ -100,23 +100,15 @@ def get_latest_timeline(live_cache, glob_data_fir, glob_data_ids):
 
 
 # ============= HEATMAP CACHE =============
-def get_latest_heatmap(live_cache, protocol):
+def get_latest_heatmap(live_cache, class_sel, origin, start, end, glob_data_fir, glob_data_ids):
     check_storage_cache(HEAT_PATH)
-    hash_key = f"no-{protocol}"
+    hash_key = f"{class_sel}-{origin}-{start}-{end}"
     hash = compute_hash(hash_key)
-    return get_cached_data(HEAT_PATH, hash, live_cache, ph_heat.preprocess_heat, protocol)
+    return get_cached_data(HEAT_PATH, hash, live_cache, ph_heat.preprocess_heat, glob_data_fir, glob_data_ids, start, end, origin, class_sel)
 
 
 # ============= PIECHART CACHE =============
-def get_latest_pie(live_cache):
+def get_latest_pie(live_cache, glob_data_fir, glob_data_ids):
     check_storage_cache(PIE_PATH)
     hash = compute_hash("only-piechart")
-    return get_cached_data(PIE_PATH, hash, live_cache, ph_pie.preprocess_pie)
-
-
-# ============= CHORD DIAGRAM CACHE =============
-def get_latest_chord(live_cache):
-    check_storage_cache(CHORD_PATH)
-    hash_key = f"chord-only"
-    hash = compute_hash(hash_key)
-    return get_cached_data(CHORD_PATH, hash, live_cache, ph_chord.prepare_chord_data)
+    return get_cached_data(PIE_PATH, hash, live_cache, ph_pie.preprocess_pie, glob_data_fir, glob_data_ids)
