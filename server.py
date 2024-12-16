@@ -101,6 +101,7 @@ def get_heatMapData():
     class_sel = request.args.get('class')
     start = request.args.get('start')
     end = request.args.get('end')
+    axis = request.args.get('axis')
 
 
     if class_sel is None:
@@ -118,6 +119,7 @@ def get_heatMapData():
     data = HeatMapData.manage_heatmap_request(
         live_cache=cache,
         class_sel = class_sel,
+        axis = axis,
         origin = origin,
         start = start,
         end = end,

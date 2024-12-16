@@ -100,11 +100,11 @@ def get_latest_timeline(live_cache, glob_data_fir, glob_data_ids):
 
 
 # ============= HEATMAP CACHE =============
-def get_latest_heatmap(live_cache, class_sel, origin, start, end, glob_data_fir, glob_data_ids):
+def get_latest_heatmap(live_cache, class_sel, axis, origin, start, end, glob_data_fir, glob_data_ids):
     check_storage_cache(HEAT_PATH)
-    hash_key = f"{class_sel}-{origin}-{start}-{end}"
+    hash_key = f"{class_sel}-{origin}-{start}-{end}-{axis if axis else 'default'}"
     hash = compute_hash(hash_key)
-    return get_cached_data(HEAT_PATH, hash, live_cache, ph_heat.preprocess_heat, glob_data_fir, glob_data_ids, start, end, origin, class_sel)
+    return get_cached_data(HEAT_PATH, hash, live_cache, ph_heat.preprocess_heat, glob_data_fir, glob_data_ids, start, end, origin, class_sel, axis)
 
 
 # ============= PIECHART CACHE =============
