@@ -63,19 +63,34 @@ def preprocess_heat(glob_data_fir, glob_data_ids, start=None, end=None, origin="
         content[source][class_] = count
 
 
-    # If there are more than 15 unique IPs, group them based on the first three numbers
-    if axis == "default":
-        if len(sources) > 15:
-            grouped_content = {}
-            for source in sources:
-                grouped_key = '.'.join(source.split('.')[:3]) + '.0/24'
-                if grouped_key not in grouped_content:
-                    grouped_content[grouped_key] = {class_: 0 for class_ in possible_classes}
-                for class_ in possible_classes:
-                    grouped_content[grouped_key][class_] += content[source][class_]
-            content = grouped_content
-            sources = list(grouped_content.keys())
+    # Compute the subnets for the IPs
+    def get_subnet(ip):
+        return '.'.join(ip.split('.')[:3]) + '.0/24'
+    
+    subnets = {source: get_subnet(source) for source in sources}
 
+    # If there are more than 10 IPs with the same subnet, aggregate in the subnet. Otherwise, keep the single IPs
+    if axis == "default":
+        subnet_count = {}
+        for source in sources:
+            subnet = '.'.join(source.split('.')[:3]) + '.0/24'
+            if subnet not in subnet_count:
+                subnet_count[subnet] = 0
+            subnet_count[subnet] += 1
+
+        grouped_content = {}
+        for source in sources:
+            subnet = '.'.join(source.split('.')[:3]) + '.0/24'
+            if subnet_count[subnet] > 5:
+                if subnet not in grouped_content:
+                    grouped_content[subnet] = {class_: 0 for class_ in possible_classes}
+                for class_ in possible_classes:
+                    grouped_content[subnet][class_] += content[source][class_]
+            else:
+                grouped_content[source] = content[source]
+
+        content = grouped_content
+        sources = list(grouped_content.keys())
 
     # Assemble the final JSON structure
     result = {
