@@ -2,6 +2,7 @@ import hashlib
 import PreprocessHist as ph
 import preprocess_heat as ph_heat
 import preprocess_pie as ph_pie
+import preprocess_chord as ph_chord
 from constants import *
 
 import os
@@ -10,7 +11,7 @@ import json
 
 global_cache_reference = None  # Use global properly
 
-ALL_CACHES = [HIST_PATH, HEAT_PATH, TIME_PATH, PIE_PATH]
+ALL_CACHES = [HIST_PATH, HEAT_PATH, TIME_PATH, PIE_PATH, CHORD_PATH]
 
 
 def store_all_caches():
@@ -111,3 +112,11 @@ def get_latest_pie(live_cache):
     check_storage_cache(PIE_PATH)
     hash = compute_hash("only-piechart")
     return get_cached_data(PIE_PATH, hash, live_cache, ph_pie.preprocess_pie)
+
+
+# ============= CHORD DIAGRAM CACHE =============
+def get_latest_chord(live_cache):
+    check_storage_cache(CHORD_PATH)
+    hash_key = f"chord-only"
+    hash = compute_hash(hash_key)
+    return get_cached_data(CHORD_PATH, hash, live_cache, ph_chord.prepare_chord_data)

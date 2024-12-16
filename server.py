@@ -15,6 +15,7 @@ import HeatMapData
 import B2BHistData
 
 import PieChartData
+import ChordData
 
 
 FIREWALL_FILE = 'firewall.csv'
@@ -41,6 +42,10 @@ cache = {
         "data": {}
     },
     PIE_PATH: {
+        "idx": set(),
+        "data": {}
+    },
+    CHORD_PATH: {
         "idx": set(),
         "data": {}
     }
@@ -96,6 +101,13 @@ def get_heatMapData():
 @app.route("/getPieChartData")
 def get_pieChartData():
     data = PieChartData.manage_pie_chart_data(
+        live_cache=cache
+    )
+    return jsonify(data)
+
+@app.route("/getChordDiagramData")
+def get_ChordDiagramData():
+    data = ChordData.manage_chord_diagram_data(
         live_cache=cache
     )
     return jsonify(data)
