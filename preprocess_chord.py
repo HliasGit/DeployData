@@ -29,24 +29,14 @@ def prepare_chord_data(glob_data_fir: pl.DataFrame):
     nodes = [{'name': service, 'group': 'service'} for service in destination_service] + \
             [{'name': str(port), 'group': 'port'} for port in destination_ports]
 
-    # Define links (with direction as part of the structure)
-    links = []
-    for _, row in data.iterrows():
-        src_idx = service_index[row['Destination service']]
-        dest_idx = destination_port_index[row['Destination port']]
-        operation = row['Operation']
-        links.append({
-            'source': src_idx,
-            'target': dest_idx,
-            'value': 1,  # Each connection counts as 1; adjust if needed
-            'operation': operation
-        })
+    # for _, row in data.iterrows():
+    #     src_idx = service_index[row['Destination service']]
+    #     dest_idx = destination_port_index[row['Destination port']]
 
     # Combine nodes and links into a single structure
     chord_data = {
         'nodes': nodes,
-        'matrix': matrix.tolist(),  # Convert numpy matrix to list for JSON
-        'links': links
+        'matrix': matrix.tolist()
     }
 
     return chord_data
