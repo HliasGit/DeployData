@@ -28,8 +28,8 @@
 # Where to find data?
 
 ```bash
-wget https://zenodo.org/records/14417070/files/data.tar.xz
-tar -xvf data.tar.xz
+wget https://zenodo.org/records/14504722/files/data_final.tar.xz
+tar -xvf data_final.tar.xz
 ```
 
 You can find the data in a .tar.xz file by following the link above
