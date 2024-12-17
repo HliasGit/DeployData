@@ -1,5 +1,6 @@
 import pandas as pd
 import polars as pl
+import re
 
 def preprocess_sankey(glob_data_fir: pl.DataFrame):
     # Convert Polars DataFrame to Pandas DataFrame
@@ -36,17 +37,26 @@ def preprocess_sankey(glob_data_fir: pl.DataFrame):
     # Map Source IPs to Node Names
     df['Node Name'] = df['Source IP'].apply(categorize_ip)
     
-    # Group by Node Name and Destination Port
+    # Group by Node Name and Destination Port, and sum counts
     counts = df.groupby(['Node Name', 'Destination port']).size().reset_index(name='Count')
     
-    # Convert the grouped data into a JSON-like format
-    result = counts.pivot(index='Node Name', columns='Destination port', values='Count').fillna(0)
-    json_data = []
-
-    for port in result.columns:
-        port_data = {
-            f"Port {port}": [{node.lower(): result.at[node, port]} for node in result.index if result.at[node, port] > 0]
-        }
-        json_data.append(port_data)
+    # Build Nodes
+    node_names = pd.concat([counts['Node Name'], counts['Destination port'].astype(str)]).unique()
+    nodes = [{"name": name} for name in node_names]
     
-    return json_data
+    # Build Links
+    links = []
+    for _, row in counts.iterrows():
+        links.append({
+            "source": node_names.tolist().index(row['Node Name']),
+            "target": node_names.tolist().index(str(row['Destination port'])),
+            "value": row['Count']
+        })
+    
+    # Combine nodes and links into a single dictionary
+    sankey_data = {
+        "nodes": nodes,
+        "links": links
+    }
+    
+    return sankey_data
