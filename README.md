@@ -44,3 +44,20 @@ tar -xvf ngrok-v3-stable-linux-amd64.tgz -C ngrok_bin
 ./ngrok_bin/ngrok config add-authtoken <Your_Auth_Token>
 ./ngrok_bin/ngrok http 5000
 ```
+
+Your ngrok enpoint will be the one displayed on the `Forwarding` row and ending with `.app`
+
+# Link the frontend
+
+Once the ngrok service is up and running, and correctly forwarding the backend server, we need to inform the frontend of the new server url.
+
+This is done by manually modifiying the file `src/redux/config.js` and inserting the ngrok url in the `server` variable:
+
+```javascript
+const server = '<your ngrok endpoint here>';
+
+export default server;
+```
+
+
+
