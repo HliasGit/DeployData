@@ -3,6 +3,7 @@ import PreprocessHist as ph
 import preprocess_heat as ph_heat
 import preprocess_pie as ph_pie
 import preprocess_chord as ph_chord
+import preprocess_sankey as ph_sankey
 from constants import *
 
 import os
@@ -11,7 +12,7 @@ import json
 
 global_cache_reference = None  # Use global properly
 
-ALL_CACHES = [HIST_PATH, HEAT_PATH, TIME_PATH, PIE_PATH, CHORD_PATH]
+ALL_CACHES = [HIST_PATH, HEAT_PATH, TIME_PATH, PIE_PATH, CHORD_PATH, SANKEY_PATH]
 
 
 def store_all_caches():
@@ -118,3 +119,8 @@ def get_latest_cord(live_cache, glob_data_fir):
     check_storage_cache(CHORD_PATH)
     hash = compute_hash("chord")
     return get_cached_data(CHORD_PATH, hash, live_cache, ph_chord.prepare_chord_data, glob_data_fir)
+
+def get_latest_sankey(live_cache, glob_data_fir):
+    check_storage_cache(SANKEY_PATH)
+    hash = compute_hash("only-sankey")
+    return get_cached_data(SANKEY_PATH, hash, live_cache, ph_sankey.preprocess_sankey, glob_data_fir)

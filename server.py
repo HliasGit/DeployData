@@ -16,7 +16,7 @@ import B2BHistData
 
 import PieChartData
 import ChordData
-
+import SankeyData
 
 FIREWALL_FILE = 'firewall.csv'
 IDS_FILE = 'ids.csv'
@@ -46,6 +46,10 @@ cache = {
         "data": {}
     },
     CHORD_PATH: {
+        "idx": set(),
+        "data": {}
+    },
+    SANKEY_PATH: {
         "idx": set(),
         "data": {}
     }
@@ -145,6 +149,15 @@ def get_ChordDiagramData():
         glob_data_fir=pl_fir_data
     )
     return jsonify(data)
+
+@app.route("/getSankeyData")
+def get_SankeyData():
+    data = SankeyData.manage_sankey_data(
+        live_cache=cache,
+        glob_data_fir=pl_fir_data
+    )
+    return jsonify(data)
+
 
 @app.route("/getB2BHistData")
 def get_b2bHistData():
